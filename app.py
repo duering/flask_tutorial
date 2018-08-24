@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
@@ -7,10 +9,15 @@ from resources.user import UserRegister
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 
+LOCAL_DB = 'sqlite:///data.db'
+REMOTE_DB_ENV_VAR = 'DATABASE_URL' # env variable defined by heroku
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(REMOTE_DB_ENV_VAR, LOCAL_DB) 
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 app.secret_key = 'blabla'
+
 api = Api(app)
 
 jwt = JWT(app, authenticate, identity) # /auth
